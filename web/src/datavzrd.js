@@ -1082,7 +1082,7 @@ export function load() {
                             return false;
                         }
                     }
-                    if (checkbox_filters[title] !== undefined && filters[title] !== []) {
+                    if (checkbox_filters[title] !== undefined && filters[title] !== "") {
                         if (checkbox_filters[title].includes(row[title])) {
                             return false;
                         }

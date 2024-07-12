@@ -76,6 +76,7 @@ export function render_html_contents() {
     }
     sidebar_html += '<li class="list-group-item sidebar-btn" id="toggleLineNumbers">Show/Hide Line Numbers</li>';
     sidebar_html += '<li class="list-group-item sidebar-btn" id="screenshotTable">Export table page as SVG</li>';
+    sidebar_html += '<li class="list-group-item sidebar-btn" id="unsort-btn">Clear Sorts</li>';
     const content = `
         <div class="collapse" id="sidebar">
             <div class="card" id="sidebar-card">

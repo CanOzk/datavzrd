@@ -19,7 +19,6 @@ import '../style/bootstrap-select.min.css';
 import '../style/bootstrap-table-fixed-columns.min.css';
 import '../style/datavzrd.css';
 
-
 let LINE_NUMBERS = false;
 
 let VEGA_EMBED_OPTIONS = { 'renderer': 'svg', 'actions': false };
@@ -319,7 +318,7 @@ function linkUrlColumn(ah, dp_columns, columns, title, link_urls, custom_content
     );
 }
 
-function colorizeDetailCard(value, div, heatmap, row) {
+function colorizeDetailCard(value, div, heatmap, row, is_float, precision) {
     let scale = datavzrdScale(heatmap);
 
     if (value !== "") {
@@ -328,6 +327,9 @@ function colorizeDetailCard(value, div, heatmap, row) {
     if (heatmap.heatmap.custom_content !== null) {
         var data_function = window[heatmap.heatmap.custom_content];
         value = data_function(value, row);
+        $(`${div}`)[0].innerHTML = value;
+    } else if (is_float && precision !== undefined) {
+        value = precision_formatter(precision, value);
         $(`${div}`)[0].innerHTML = value;
     }
 }
@@ -372,14 +374,16 @@ function colorizeHeaderRow(row, heatmap, header_label_length) {
             }
         }
     }
-    var skip_label = header_label_length > 0;
-    $(`table > thead > tr:nth-child(${row + 1}) > td`).each(
+    var start = 0;
+    if (header_label_length > 0) {
+        start = 1;
+    }
+    $(`table > thead > tr:nth-child(${row + 1}) > td:gt(${start})`).each(
         function() {
             var value = this.innerHTML;
-            if (value !== "" && !skip_label) {
+            if (value !== "") {
                 this.style.setProperty("background-color", scale(value), "important");
             }
-            skip_label = false;
         }
     );
 }
@@ -741,20 +745,25 @@ export function load() {
 
         for (const ah of header_config.headers) {
             additional_headers += "<tr>";
-            if (config.detail_mode || ah.label != undefined) {
+            if (config.detail_mode || ah.label) {
                 additional_headers += "<td";
                 if (!config.detail_mode) {
                     additional_headers += " style='border: none !important;'";
                 }
                 additional_headers += ">";
-                if (ah.label != undefined) {
+                if (ah.label) {
                     additional_headers += `<b>${ah.label}</b>`;
                 }
                 additional_headers += "</td>";
             }
+            additional_headers += "<td></td>";
             for (const title of config.columns) {
-                if (config.displayed_columns.includes(title)) {
-                    additional_headers += `<td>${ah.header[title]}</td>`;
+                if (config.displayed_columns.includes(title) ) {
+                    if (ah.header[title] === undefined) {
+                        additional_headers += "<td></td>";
+                    } else {
+                        additional_headers += `<td>${ah.header[title]}</td>`;
+                    }
                 }
             }
             additional_headers += "</tr>";
@@ -829,7 +838,9 @@ export function load() {
             }
 
             for (const o of config.heatmaps) {
-                colorizeDetailCard(row[o.title], `#heatmap-${index}-${config.columns.indexOf(o.title)}`, o, row);
+                if (!config.displayed_columns.includes(o.title)) {
+                    colorizeDetailCard(row[o.title], `#heatmap-${index}-${config.columns.indexOf(o.title)}`, o, row, config.column_config[o.title].is_float, config.column_config[o.title].precision);
+                }
             }
 
             for (const o of config.ticks) {
@@ -1248,9 +1259,10 @@ function get_index(name, columns, detail_mode, header_label_length) {
 }
 
 function line_numbers(style) {
+    const hasLabel = header_config.headers.some(header => header.label);
     var table = document.getElementById("table");
     var rows = table.getElementsByTagName("tr");
-    var cell_index = config.detail_mode ? 1 : 0;
+    var cell_index = config.detail_mode || hasLabel ? 1 : 0;
     for (var i = 0; i < rows.length; i++) {
         var cells = rows[i].getElementsByTagName("td");
         if (cells.length > 0) {
@@ -1351,6 +1363,13 @@ function decompress(data) {
 }
 
 export function sort(column, order, svg) {
+    const options = $('#table').bootstrapTable('getOptions');
+    if (options.sortName === column && options.sortOrder === order) {
+        $('#table').bootstrapTable('sortBy', {"":""})
+        document.querySelectorAll('.sym-container svg').forEach(svg => svg.style.color = "currentColor");
+        svg.style.color = "#007bff";
+        return;
+    }
     document.querySelectorAll('.sym-container svg').forEach(svg => svg.style.color = "currentColor");
     svg.style.color = "#c21f30";
     $('#table').bootstrapTable('sortBy', {field: column, sortOrder: order})

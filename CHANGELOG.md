@@ -1,5 +1,27 @@
 # Changelog
 
+## [2.41.2](https://github.com/datavzrd/datavzrd/compare/v2.41.1...v2.41.2) (2024-08-20)
+
+
+### Bug Fixes
+
+* Fix heatmaps in detail mode when another heatmap uses custom-content ([c1114ef](https://github.com/datavzrd/datavzrd/commit/c1114ef5c3983e3e28c2673be2d4a961d0a10065))
+* Fix precision for heatmaps with display-mode: detail ([f46962b](https://github.com/datavzrd/datavzrd/commit/f46962bced945b7480082c71b6eb86ab27e3775c))
+
+## [2.41.1](https://github.com/datavzrd/datavzrd/compare/v2.41.0...v2.41.1) (2024-07-22)
+
+
+### Bug Fixes
+
+* Fix additional header row offset ([#756](https://github.com/datavzrd/datavzrd/issues/756)) ([d095ca2](https://github.com/datavzrd/datavzrd/commit/d095ca26ccaabc5e3eab873053315800a4c1845c))
+
+## [2.41.0](https://github.com/datavzrd/datavzrd/compare/v2.40.0...v2.41.0) (2024-07-12)
+
+
+### Features
+
+* Allow unsorting tables ([#751](https://github.com/datavzrd/datavzrd/issues/751)) ([de3fd98](https://github.com/datavzrd/datavzrd/commit/de3fd98120e271fa3770afe6305c888d1048a612))
+
 ## [2.40.0](https://github.com/datavzrd/datavzrd/compare/v2.39.1...v2.40.0) (2024-07-10)
 
 
